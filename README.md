@@ -1,30 +1,30 @@
-# Datto SaaS Backup Monitor for Zabbix
+# 🛡️ Datto SaaS Backup Monitor for Zabbix 📊
 
 A Python-based monitoring solution that integrates **Datto SaaS Protection** with **Zabbix**.
 This script automatically discovers Office 365 tenants backed up by Datto, retrieves their backup status and coverage percentage, and sends the metrics directly to a Zabbix server using the native Zabbix Sender protocol.
 
-## Features
+## ✨ Features
 
-- **Automated Tenant Discovery**: Uses Zabbix Low-Level Discovery (LLD) to automatically find and monitor Office 365 tenants.
-- **Agentless Integration**: Sends data using the native Zabbix Sender protocol (using raw sockets) without requiring the `zabbix_sender` binary.
-- **Detailed Metrics**: Monitors the exact backup percentage and qualitative status (Perfect, Imperfect, Incomplete).
-- **Global Statistics**: Provides aggregated counters for the overall health of your backups.
-- **Customizable Alerts**: Includes templates for high-priority ("Incomplete" backups) and warning-level ("Imperfect" backups) triggers.
-
----
-
-## Prerequisites
-
-- **Python 3.x**
-- `requests` library (`pip install -r requirements.txt`)
-- A Datto API Public and Secret Key.
-- A Zabbix Server reachable on port **10051** by the machine running this script.
+- 🔍 **Automated Tenant Discovery**: Uses Zabbix Low-Level Discovery (LLD) to automatically find and monitor Office 365 tenants.
+- 📡 **Agentless Integration**: Sends data using the native Zabbix Sender protocol (using raw sockets) without requiring the `zabbix_sender` binary.
+- 📊 **Detailed Metrics**: Monitors the exact backup percentage and qualitative status (Perfect, Imperfect, Incomplete).
+- 📈 **Global Statistics**: Provides aggregated counters for the overall health of your backups.
+- 🚨 **Customizable Alerts**: Includes templates for high-priority ("Incomplete" backups) and warning-level ("Imperfect" backups) triggers.
 
 ---
 
-## Setup & Execution
+## 🛠️ Prerequisites
 
-### 1. Configure the Script
+- 🐍 **Python 3.x**
+- 📦 `requests` library (`pip install -r requirements.txt`)
+- 🔑 A Datto API Public and Secret Key.
+- 🖥️ A Zabbix Server reachable on port **10051** by the machine running this script.
+
+---
+
+## 🚀 Setup & Execution
+
+### 1️⃣ Configure the Script
 
 Edit `datto_saas_zabbix.py` with your Datto credentials and Zabbix server IP details:
 
@@ -40,7 +40,7 @@ ZABBIX_SERVER_IP = "YOUR_ZABBIX_SERVER_IP"
 ZABBIX_HOST_NAME = "Datto-SaaS-Monitor"
 ```
 
-### 2. Install on the Server
+### 2️⃣ Install on the Server
 
 ```bash
 # Copy files to your monitoring server
@@ -67,11 +67,11 @@ It is recommended to schedule this script via **cron** to run periodically (e.g.
 
 ---
 
-## Zabbix Configuration Guide
+## ⚙️ Zabbix Configuration Guide
 
 This section explains how to configure the host and all items in Zabbix to receive the metrics.
 
-### 1. Host Creation in Zabbix
+### 🏗️ 1. Host Creation in Zabbix
 
 1. Go to **Configuration → Hosts → Create host**
 2. Fill in:
@@ -81,7 +81,7 @@ This section explains how to configure the host and all items in Zabbix to recei
 3. **Interfaces** tab: add an **Agent** interface: IP `127.0.0.1`, port `10050` *(required by Zabbix even if not directly polled)*
 4. Click **Add**.
 
-### 2. LLD Rule Creation (Discovery)
+### 🔍 2. LLD Rule Creation (Discovery)
 
 This rule automatically discovers Office 365 tenants and creates items for each.
 
@@ -94,18 +94,18 @@ This rule automatically discovers Office 365 tenants and creates items for each.
    - **Keep lost resources period**: `7d` *(removes tenants not seen for 7 days)*
 3. Click **Add**.
 
-### 3. Item Prototypes (within the LLD Rule)
+### 📦 3. Item Prototypes (within the LLD Rule)
 
 From the newly created LLD Rule → **Item prototypes → Create item prototype**
 
-#### 3.1 – Backup status (String)
+#### 🏷️ 3.1 – Backup status (String)
 - **Name**: `Backup status - {#TENANT}`
 - **Type**: `Zabbix trapper`
 - **Key**: `datto.saas.status[{#TENANT}]`
 - **Type of information**: `Text`
 
 
-#### 3.2 – Backup percentage (Number)
+#### 💯 3.2 – Backup percentage (Number)
 - **Name**: `Backup percentage - {#TENANT}`
 - **Type**: `Zabbix trapper`
 - **Key**: `datto.saas.backup_pct[{#TENANT}]`
@@ -113,21 +113,21 @@ From the newly created LLD Rule → **Item prototypes → Create item prototype*
 - **Units**: `%`
 
 
-### 4. Trigger Prototypes (within LLD)
+### ⚠️ 4. Trigger Prototypes (within LLD)
 
 From the LLD Rule → **Trigger prototypes → Create trigger prototype**
 
-#### 4.1 – Incomplete Alert (High)
+#### 🔴 4.1 – Incomplete Alert (High)
 - **Name**: `INCOMPLETE Backup: {#TENANT}`
 - **Severity**: `High`
 - **Expression**: `last(/Datto-SaaS-Monitor/datto.saas.status[{#TENANT}])="Incomplete"`
 
-#### 4.2 – Imperfect Alert (Warning)
+#### 🟡 4.2 – Imperfect Alert (Warning)
 - **Name**: `IMPERFECT Backup: {#TENANT}`
 - **Severity**: `Warning`
 - **Expression**: `last(/Datto-SaaS-Monitor/datto.saas.status[{#TENANT}])="Imperfect"`
 
-### 5. Simple Items – Global Counters
+### 📈 5. Simple Items – Global Counters
 
 These items provide aggregated statistics across all monitored tenants. Create them directly under **Items** on the host, with **Update interval** set to `0`.
 
@@ -143,16 +143,16 @@ These items provide aggregated statistics across all monitored tenants. Create t
 - **Name**: `SaaS - Total monitored tenants`
   **Type**: `Zabbix trapper` | **Key**: `datto.saas.stats.total_count` | **Type of info**: `Numeric (unsigned)`
 
-### 6. Global Triggers (Optional)
+### 🚨 6. Global Triggers (Optional)
 
 You can optionally create host-level triggers for global visibility:
 
-- `Datto SaaS: there are tenants with INCOMPLETE backup` (High): `last(/Datto-SaaS-Monitor/datto.saas.stats.incomplete_count)>0`
-- `Datto SaaS: there are tenants with IMPERFECT backup` (Warning): `last(/Datto-SaaS-Monitor/datto.saas.stats.imperfect_count)>0`
+- 🔴 `Datto SaaS: there are tenants with INCOMPLETE backup` (High): `last(/Datto-SaaS-Monitor/datto.saas.stats.incomplete_count)>0`
+- 🟡 `Datto SaaS: there are tenants with IMPERFECT backup` (Warning): `last(/Datto-SaaS-Monitor/datto.saas.stats.imperfect_count)>0`
 
 ---
 
-## Keys Summary Reference
+## 📚 Keys Summary Reference
 
 | Key | Zabbix Type | Description |
 |---|---|---|
@@ -166,5 +166,5 @@ You can optionally create host-level triggers for global visibility:
 
 ---
 
-## License
+## 📄 License
 MIT License
