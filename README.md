@@ -1,4 +1,4 @@
-# ![Datto](#) SaaS Backup Monitor for Zabbix
+# Datto SaaS Backup Monitor for Zabbix
 
 A Python-based monitoring solution that integrates **Datto SaaS Protection** with **Zabbix**.
 This script automatically discovers Office 365 tenants backed up by Datto, retrieves their backup status and coverage percentage, and sends the metrics directly to a Zabbix server using the native Zabbix Sender protocol.
