@@ -69,9 +69,19 @@ It is recommended to schedule this script via **cron** to run periodically (e.g.
 
 ## 🧠 Zabbix Configuration Guide
 
-This section explains how to configure the host and all items in Zabbix to receive the metrics.
+### 📂 Quick Start: Import Template (Recommended)
 
-### 🏛️ 1. Host Creation in Zabbix
+Instead of manually creating each item, you can now import the provided template directly into Zabbix:
+
+1. Download the `zabbix_datto_template.xml` file.
+2. In Zabbix, go to **Data collection → Hosts** (or **Configuration → Hosts** in older versions).
+3. Click the **Import** button in the top right corner.
+4. Select the `zabbix_datto_template.xml` file and click **Import**.
+5. This will automatically create the **Datto-SaaS-Monitor** host with all its items, discovery rules, and triggers pre-configured.
+
+---
+
+### 🏛️ 1. Manual Host Creation (Optional)
 
 1. Go to **Configuration → Hosts → Create host**
 2. Fill in:

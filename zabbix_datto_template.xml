@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>7.4</version>
+    <host_groups>
+        <host_group>
+            <uuid>e76262abfed74e3380d7508e43d36c3f</uuid>
+            <name>backup</name>
+        </host_group>
+    </host_groups>
+    <hosts>
+        <host>
+            <host>Datto-SaaS-Monitor</host>
+            <name>Datto-SaaS-Monitor</name>
+            <status>DISABLED</status>
+            <groups>
+                <group>
+                    <name>backup</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <items>
+                <item>
+                    <name>SaaS - Tenants with Imperfect backup</name>
+                    <type>TRAP</type>
+                    <key>datto.saas.stats.imperfect_count</key>
+                    <triggers>
+                        <trigger>
+                            <expression>last(/Datto-SaaS-Monitor/datto.saas.stats.imperfect_count)&gt;0</expression>
+                            <name>Datto SaaS: there are tenants with IMPERFECT backup</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>SaaS - Tenants with Incomplete backup</name>
+                    <type>TRAP</type>
+                    <key>datto.saas.stats.incomplete_count</key>
+                    <triggers>
+                        <trigger>
+                            <expression>last(/Datto-SaaS-Monitor/datto.saas.stats.incomplete_count)&gt;0</expression>
+                            <name>Datto SaaS: there are tenants with INCOMPLETE backup</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>SaaS - Tenants with Perfect backup</name>
+                    <type>TRAP</type>
+                    <key>datto.saas.stats.perfect_count</key>
+                </item>
+                <item>
+                    <name>SaaS - Total monitored tenants</name>
+                    <type>TRAP</type>
+                    <key>datto.saas.stats.total_count</key>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Datto SaaS - Tenant Discovery</name>
+                    <type>TRAP</type>
+                    <key>datto.saas.discovery</key>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Backup percentage - {#TENANT}</name>
+                            <type>TRAP</type>
+                            <key>datto.saas.backup_pct[{#TENANT}]</key>
+                            <value_type>FLOAT</value_type>
+                            <units>%</units>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Backup status - {#TENANT}</name>
+                            <type>TRAP</type>
+                            <key>datto.saas.status[{#TENANT}]</key>
+                            <value_type>TEXT</value_type>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>last(/Datto-SaaS-Monitor/datto.saas.status[{#TENANT}])=&quot;Imperfect&quot;</expression>
+                                    <name>IMPERFECT Backup: {#TENANT}</name>
+                                    <priority>WARNING</priority>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>last(/Datto-SaaS-Monitor/datto.saas.status[{#TENANT}])=&quot;Incomplete&quot;</expression>
+                                    <name>INCOMPLETE Backup: {#TENANT}</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </host>
+    </hosts>
+</zabbix_export>
